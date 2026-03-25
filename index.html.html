@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Learning Journey Notebook</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0f0f23;--bg2:#1a1a3e;--bg3:#0d1b2a;--card:rgba(255,255,255,0.04);--border:rgba(255,255,255,0.08);--text:#e0e0e0;--muted:#94a3b8;--blue:#4A90D9;--purple:#7C3AED;--pink:#EC4899;--amber:#F59E0B;--green:#10B981;--teal:#20B2AA;--red:#EF4444}
+body{font-family:'Outfit',system-ui,sans-serif;background:linear-gradient(135deg,var(--bg) 0%,var(--bg2) 40%,var(--bg3) 100%);color:var(--text);min-height:100vh;-webkit-tap-highlight-color:transparent}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--blue);border-radius:3px}
+
+/* NAV */
+.nav{position:sticky;top:0;z-index:50;background:rgba(15,15,35,0.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:10px 16px}
+.nav-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:8px;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none}
+.nav-inner::-webkit-scrollbar{display:none}
+.logo{font-weight:900;font-size:17px;background:linear-gradient(135deg,var(--blue),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-right:8px;white-space:nowrap;flex-shrink:0}
+.tab{border:none;padding:8px 14px;border-radius:22px;font-family:'Outfit',sans-serif;font-weight:600;font-size:12px;cursor:pointer;white-space:nowrap;transition:all .3s}
+.tab-on{background:linear-gradient(135deg,var(--blue),var(--purple));color:#fff;box-shadow:0 4px 16px rgba(74,144,217,0.35)}
+.tab-off{background:rgba(255,255,255,0.06);color:var(--muted)}
+.tab:hover{transform:translateY(-1px)}
+
+/* AUDIO BAR */
+.audio-bar{position:fixed;bottom:0;left:0;right:0;z-index:60;background:rgba(15,15,35,0.95);backdrop-filter:blur(20px);border-top:1px solid var(--border);padding:12px 16px;display:none;align-items:center;gap:12px}
+.audio-bar.active{display:flex}
+.audio-title{flex:1;font-size:13px;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.audio-btn{width:36px;height:36px;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;transition:all .2s}
+.audio-play{background:var(--blue);color:#fff}
+.audio-stop{background:rgba(239,68,68,0.2);color:var(--red)}
+.audio-pulse{animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(74,144,217,0.4)}50%{box-shadow:0 0 0 10px rgba(74,144,217,0)}}
+
+/* MAIN */
+.main{max-width:1100px;margin:0 auto;padding:20px 16px 100px}
+.section{display:none}.section.active{display:block;animation:fadeIn .5s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+.anim{animation:slideUp .5s ease forwards;opacity:0}
+
+/* HERO */
+.hero{text-align:center;padding:48px 16px 32px}
+.hero-icon{font-size:56px;margin-bottom:12px}
+.hero-title{font-weight:900;font-size:clamp(28px,6vw,42px);background:linear-gradient(135deg,var(--blue),var(--purple),var(--pink));-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1.2;margin-bottom:10px}
+.hero-sub{font-size:clamp(14px,3vw,17px);color:var(--muted);max-width:560px;margin:0 auto 32px;line-height:1.6}
+
+/* CARDS */
+.grid{display:grid;gap:14px}
+.grid-5{grid-template-columns:repeat(auto-fit,minmax(180px,1fr))}
+.grid-3{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+.grid-2{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;cursor:pointer;transition:all .3s cubic-bezier(.4,0,.2,1);position:relative;overflow:hidden}
+.card:hover{transform:translateY(-6px);box-shadow:0 16px 48px rgba(74,144,217,0.12)}
+.card-top{height:3px;position:absolute;top:0;left:0;right:0}
+.card-icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:10px}
+.card-name{font-weight:700;font-size:15px;color:var(--text)}
+.card-cat{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-top:2px}
+.card-best{font-size:12px;color:var(--muted);margin-top:8px;line-height:1.5}
+.card-best b{color:var(--blue)}
+.card-tier{font-family:'JetBrains Mono',monospace;font-size:10px;color:#64748b;background:rgba(255,255,255,0.04);padding:3px 8px;border-radius:5px;margin-top:10px;display:inline-block}
+.card-audio{position:absolute;top:12px;right:12px;width:32px;height:32px;border-radius:50%;background:rgba(74,144,217,0.15);border:none;color:var(--blue);font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;z-index:2}
+.card-audio:hover{background:var(--blue);color:#fff;transform:scale(1.1)}
+.card-audio.playing{background:var(--red);color:#fff;animation:pulse 1.5s infinite}
+
+/* FILTERS */
+.filters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;align-items:center}
+.search{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:10px;padding:9px 14px;color:var(--text);font-size:13px;font-family:'Outfit',sans-serif;width:180px;outline:none}
+.pill{padding:5px 12px;border-radius:18px;border:1px solid rgba(255,255,255,0.1);font-size:11px;font-family:'Outfit',sans-serif;font-weight:500;cursor:pointer;transition:all .2s;background:rgba(255,255,255,0.04);color:var(--muted)}
+.pill:hover{border-color:var(--blue)}.pill.on{background:var(--blue);color:#fff;border-color:var(--blue)}
+
+/* QA */
+.qa-card{perspective:1000px;cursor:pointer;height:240px}
+.qa-inner{transition:transform .6s cubic-bezier(.4,0,.2,1);transform-style:preserve-3d;position:relative;width:100%;height:100%}
+.qa-inner.flipped{transform:rotateY(180deg)}
+.qa-face{backface-visibility:hidden;border-radius:14px;position:absolute;top:0;left:0;width:100%;height:100%;padding:20px;display:flex;flex-direction:column}
+.qa-front{background:linear-gradient(135deg,rgba(124,58,237,0.15),rgba(74,144,217,0.15));border:1px solid rgba(124,58,237,0.3);justify-content:center;align-items:center;text-align:center}
+.qa-back{background:linear-gradient(135deg,rgba(16,185,129,0.12),rgba(74,144,217,0.12));border:1px solid rgba(16,185,129,0.3);transform:rotateY(180deg);justify-content:space-between;overflow:auto}
+.qa-emoji{font-size:36px;margin-bottom:12px}
+.qa-q{font-weight:700;font-size:14px;line-height:1.5}
+.qa-hint{margin-top:14px;font-size:11px;color:var(--purple);font-weight:600}
+.qa-a{font-size:12px;color:#d1d5db;line-height:1.6}
+.qa-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:10px}
+.qa-tag{padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600}
+
+/* COMPARE TABLE */
+.cmp{width:100%;border-collapse:collapse;font-size:12px}
+.cmp th{padding:12px 10px;background:rgba(255,255,255,0.06);color:var(--muted);font-weight:700;font-size:12px;text-align:center;position:sticky;top:52px;z-index:5}
+.cmp th:first-child{text-align:left}
+.cmp td{padding:10px;border-bottom:1px solid rgba(255,255,255,0.04);text-align:center;color:#d1d5db;font-size:12px}
+.cmp td:first-child{text-align:left;font-weight:600;color:var(--text)}
+.cmp tr:hover td{background:rgba(74,144,217,0.06)}
+.cmp-wrap{overflow-x:auto;border-radius:14px;border:1px solid var(--border);background:var(--card)}
+
+/* WINNER */
+.winner{border-radius:12px;padding:14px;border-left:4px solid}
+.winner-cat{font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:1px;margin-bottom:3px}
+.winner-name{font-weight:800;font-size:15px}
+.winner-why{font-size:11px;color:var(--muted);margin-top:3px}
+
+/* DESKTOP */
+.task-row{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid rgba(255,255,255,0.04);transition:background .2s}
+.task-row:hover{background:rgba(74,144,217,0.06)}
+.task-row:last-child{border-bottom:none}
+.task-left{display:flex;align-items:center;gap:10px;font-size:13px;color:#d1d5db}
+.task-tool{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--blue);background:rgba(74,144,217,0.1);padding:3px 10px;border-radius:6px}
+
+/* ROADMAP */
+.phase{background:var(--card);border:1px solid var(--border);border-radius:14px;margin-bottom:14px;overflow:hidden}
+.phase-head{padding:14px 18px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,0.06);cursor:pointer}
+.phase-info{display:flex;align-items:center;gap:10px}
+.phase-icon{font-size:22px}
+.phase-title{font-weight:700;font-size:15px}
+.phase-weeks{font-size:11px;color:var(--muted)}
+.phase-count{font-family:'JetBrains Mono',monospace;font-size:11px}
+.milestone{display:flex;align-items:center;gap:10px;padding:10px 18px;border-bottom:1px solid rgba(255,255,255,0.04);cursor:pointer;transition:background .2s}
+.milestone:hover{background:rgba(74,144,217,0.06)}
+.milestone:last-child{border-bottom:none}
+.check{width:20px;height:20px;border-radius:5px;border:2px solid rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;font-size:12px;color:#fff;flex-shrink:0;transition:all .3s}
+.check.done{border:none}
+.ms-text{font-size:13px;color:#d1d5db;transition:all .3s}
+.ms-text.done{color:#64748b;text-decoration:line-through}
+
+/* MODAL */
+.modal-bg{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(8px);z-index:70;display:flex;align-items:center;justify-content:center;padding:16px;animation:fadeIn .3s}
+.modal{background:linear-gradient(135deg,#1a1a3e,#0d1b2a);border:1px solid rgba(255,255,255,0.12);border-radius:18px;padding:28px;max-width:520px;width:100%;max-height:80vh;overflow-y:auto;position:relative}
+.modal-close{position:absolute;top:14px;right:14px;background:rgba(255,255,255,0.1);border:none;border-radius:8px;width:30px;height:30px;color:var(--muted);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.modal-header{display:flex;align-items:center;gap:14px;margin-bottom:18px}
+.modal-icon{width:56px;height:56px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:30px}
+.modal-name{font-weight:800;font-size:22px}
+.modal-cat{font-size:12px;font-weight:600;text-transform:uppercase}
+.modal-desc{font-size:13px;color:#d1d5db;line-height:1.7;margin-bottom:14px}
+.modal-best{border-radius:10px;padding:14px;margin-bottom:14px}
+.modal-best-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
+.modal-tier{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted);background:rgba(255,255,255,0.04);padding:8px 14px;border-radius:8px}
+.modal-listen{width:100%;margin-top:14px;padding:12px;border-radius:10px;border:none;font-family:'Outfit',sans-serif;font-weight:700;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .2s}
+.modal-listen:hover{transform:translateY(-2px)}
+
+/* REC BOX */
+.rec{border-radius:14px;padding:20px;margin-top:20px}
+.rec-title{font-weight:800;font-size:15px;margin-bottom:6px}
+.rec-text{font-size:13px;line-height:1.7;color:#d1d5db}
+
+/* SETUP TAGS */
+.tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.tag{background:rgba(74,144,217,0.12);border:1px solid rgba(74,144,217,0.3);border-radius:18px;padding:5px 12px;font-size:12px;color:#93c5fd}
+
+/* SECTION TITLE */
+.sec-title{font-weight:800;font-size:clamp(22px,5vw,28px);margin-bottom:6px;background:linear-gradient(135deg,var(--blue),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.sec-sub{font-size:13px;color:var(--muted);margin-bottom:20px}
+
+/* PROGRESS */
+.progress-wrap{display:flex;align-items:center;gap:16px;justify-content:center;margin-bottom:32px}
+.progress-label{font-weight:700;font-size:15px}
+.progress-sub{font-size:12px;color:var(--muted)}
+
+/* RESPONSIVE */
+@media(max-width:600px){
+  .grid-5{grid-template-columns:repeat(2,1fr)}
+  .grid-3{grid-template-columns:1fr}
+  .grid-2{grid-template-columns:1fr}
+  .qa-card{height:220px}
+  .hero{padding:32px 12px 24px}
+  .nav{padding:8px 12px}
+  .tab{padding:7px 10px;font-size:11px}
+  .main{padding:14px 12px 100px}
+  .cmp th,.cmp td{padding:8px 6px;font-size:11px}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-inner">
+    <span class="logo">AI Notebook</span>
+    <button class="tab tab-on" onclick="showTab('home',this)">🏠 Home</button>
+    <button class="tab tab-off" onclick="showTab('tools',this)">🛠️ Tools</button>
+    <button class="tab tab-off" onclick="showTab('qa',this)">❓ Q&A</button>
+    <button class="tab tab-off" onclick="showTab('desktop',this)">🖥️ Desktop AI</button>
+    <button class="tab tab-off" onclick="showTab('compare',this)">⚔️ Compare</button>
+    <button class="tab tab-off" onclick="showTab('roadmap',this)">🗺️ Roadmap</button>
+  </div>
+</nav>
+
+<!-- AUDIO BAR -->
+<div class="audio-bar" id="audioBar">
+  <button class="audio-btn audio-play" id="audioPause" onclick="togglePause()">⏸️</button>
+  <div>
+    <div class="audio-title" id="audioTitle">Now playing...</div>
+    <div style="font-size:11px;color:var(--muted)" id="audioStatus">Speaking...</div>
+  </div>
+  <button class="audio-btn audio-stop" onclick="stopAudio()">⏹️</button>
+</div>
+
+<div class="main">
+
+<!-- ════ HOME ════ -->
+<div class="section active" id="sec-home">
+  <div class="hero">
+    <div class="hero-icon">🚀</div>
+    <h1 class="hero-title">AI Learning Journey</h1>
+    <p class="hero-sub">Your interactive notebook for mastering 15 AI tools, building your command center, and becoming 10x more productive. Tap any tool to learn — or listen.</p>
+    <div class="progress-wrap">
+      <svg width="70" height="70" viewBox="0 0 70 70">
+        <circle cx="35" cy="35" r="30" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="5"/>
+        <circle cx="35" cy="35" r="30" fill="none" stroke="url(#pg)" stroke-width="5" stroke-linecap="round" stroke-dasharray="188.5" id="progressRing" stroke-dashoffset="188.5" transform="rotate(-90 35 35)"/>
+        <defs><linearGradient id="pg" x1="0%" y1="0%" x2="100%"><stop offset="0%" stop-color="#4A90D9"/><stop offset="100%" stop-color="#7C3AED"/></linearGradient></defs>
+        <text x="35" y="39" text-anchor="middle" fill="white" font-size="14" font-family="Outfit" font-weight="700" id="progressPct">0%</text>
+      </svg>
+      <div>
+        <div class="progress-label">Learning Progress</div>
+        <div class="progress-sub" id="progressText">0 of 25 milestones</div>
+      </div>
+    </div>
+  </div>
+  <div class="grid grid-5">
+    <div class="card anim" style="animation-delay:.0s;border-top:3px solid var(--blue)" onclick="showTab('tools')"><div style="font-size:28px;margin-bottom:8px">🛠️</div><div class="card-name">15 AI Tools</div><div class="card-best">Deep dive + audio for each</div></div>
+    <div class="card anim" style="animation-delay:.1s;border-top:3px solid var(--purple)" onclick="showTab('qa')"><div style="font-size:28px;margin-bottom:8px">❓</div><div class="card-name">Q&A Flip Cards</div><div class="card-best">Tap to reveal answers</div></div>
+    <div class="card anim" style="animation-delay:.2s;border-top:3px solid var(--pink)" onclick="showTab('desktop')"><div style="font-size:28px;margin-bottom:8px">🖥️</div><div class="card-name">Desktop AI</div><div class="card-best">10x productivity assistant</div></div>
+    <div class="card anim" style="animation-delay:.3s;border-top:3px solid var(--amber)" onclick="showTab('compare')"><div style="font-size:28px;margin-bottom:8px">⚔️</div><div class="card-name">Head-to-Head</div><div class="card-best">Claude vs Gemini vs Perplexity</div></div>
+    <div class="card anim" style="animation-delay:.4s;border-top:3px solid var(--green)" onclick="showTab('roadmap')"><div style="font-size:28px;margin-bottom:8px">🗺️</div><div class="card-name">8-Week Roadmap</div><div class="card-best">Your learning path</div></div>
+  </div>
+  <div class="card" style="margin-top:18px;cursor:default">
+    <div style="font-weight:700;font-size:14px;color:var(--blue);margin-bottom:8px">📱 Your Setup Profile</div>
+    <div class="tags">
+      <span class="tag">💻 Windows Lenovo</span><span class="tag">📧 Gmail</span><span class="tag">📱 iPhone</span><span class="tag">📱 iPad</span><span class="tag">⌚ Apple Watch</span><span class="tag">🎧 AirPods</span>
+    </div>
+  </div>
+  <div style="text-align:center;margin-top:24px;padding:16px;border-radius:12px;background:rgba(74,144,217,0.08);border:1px solid rgba(74,144,217,0.2)">
+    <div style="font-size:24px;margin-bottom:6px">🔊</div>
+    <div style="font-weight:700;font-size:14px;color:var(--blue)">Audio Learning Enabled</div>
+    <div style="font-size:12px;color:var(--muted);margin-top:4px">Tap the 🔊 button on any tool card or inside the detail view to hear it read aloud</div>
+  </div>
+</div>
+
+<!-- ════ TOOLS ════ -->
+<div class="section" id="sec-tools">
+  <div class="sec-title" style="background:linear-gradient(135deg,var(--blue),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent">🛠️ AI Tools Deep Dive</div>
+  <div class="sec-sub">Tap any card to learn more. Hit 🔊 to listen.</div>
+  <div class="filters">
+    <input class="search" type="text" placeholder="🔍 Search tools..." oninput="filterTools()">
+    <div id="catFilters"></div>
+  </div>
+  <div class="grid grid-3" id="toolsGrid"></div>
+</div>
+
+<!-- ════ Q&A ════ -->
+<div class="section" id="sec-qa">
+  <div class="sec-title" style="background:linear-gradient(135deg,var(--purple),var(--pink));-webkit-background-clip:text;-webkit-text-fill-color:transparent">❓ Flip-Card Q&A</div>
+  <div class="sec-sub">Tap any card to reveal the answer! Hit 🔊 to listen.</div>
+  <div class="grid grid-2" id="qaGrid"></div>
+</div>
+
+<!-- ════ DESKTOP ════ -->
+<div class="section" id="sec-desktop">
+  <div class="sec-title" style="background:linear-gradient(135deg,var(--pink),var(--amber));-webkit-background-clip:text;-webkit-text-fill-color:transparent">🖥️ AI Desktop Assistant — 10x Productivity</div>
+  <div class="sec-sub">AI that handles your entire desktop — emails, files, spreadsheets, voice commands.</div>
+
+  <div class="card" style="cursor:default;margin-bottom:18px;padding:0;overflow:hidden">
+    <div style="padding:14px 18px;background:rgba(236,72,153,0.1);border-bottom:1px solid var(--border)">
+      <span style="font-weight:700;font-size:14px;color:#f9a8d4">⚡ Task → Best Tool Mapping</span>
+      <button class="card-audio" style="position:relative;float:right;top:-2px" onclick="event.stopPropagation();speakDesktopTasks()">🔊</button>
+    </div>
+    <div id="taskList"></div>
+  </div>
+
+  <div style="font-weight:700;font-size:17px;margin-bottom:14px">The Big 3 Desktop AI Assistants</div>
+  <div class="grid grid-3" id="assistantCards"></div>
+
+  <div class="rec" style="background:linear-gradient(135deg,rgba(217,119,6,0.12),rgba(245,158,11,0.08));border:1px solid rgba(217,119,6,0.3)">
+    <div class="rec-title" style="color:var(--amber)">🏆 Recommendation for Your Setup
+      <button class="card-audio" style="position:relative;display:inline-flex;margin-left:8px;width:28px;height:28px;font-size:12px;vertical-align:middle" onclick="speakRec()">🔊</button>
+    </div>
+    <div class="rec-text"><strong style="color:var(--amber)">Claude AI Pro ($20/mo)</strong> as your primary desktop assistant. It works on your Windows Lenovo right now, connects to Gmail and Calendar via MCP, and lets you send tasks from your iPhone with Dispatch. Add <strong style="color:var(--teal)">Perplexity Pro ($20/mo)</strong> for research and the Comet browser. Use <strong style="color:var(--blue)">Gemini's free tier</strong> for Google-specific tasks. <strong>Total: $40/month for a 10x productivity stack.</strong></div>
+  </div>
+</div>
+
+<!-- ════ COMPARE ════ -->
+<div class="section" id="sec-compare">
+  <div class="sec-title" style="background:linear-gradient(135deg,var(--amber),var(--red));-webkit-background-clip:text;-webkit-text-fill-color:transparent">⚔️ Claude vs Gemini vs Perplexity</div>
+  <div class="sec-sub">Head-to-head comparison tailored to your Windows + Gmail + Apple setup.
+    <button class="card-audio" style="position:relative;display:inline-flex;margin-left:8px;width:28px;height:28px;font-size:12px;vertical-align:middle" onclick="speakCompare()">🔊</button>
+  </div>
+  <div class="cmp-wrap">
+    <table class="cmp" id="cmpTable"></table>
+  </div>
+  <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:18px" id="winnerCards"></div>
+</div>
+
+<!-- ════ ROADMAP ════ -->
+<div class="section" id="sec-roadmap">
+  <div class="sec-title" style="background:linear-gradient(135deg,var(--green),var(--blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent">🗺️ Your 8-Week AI Learning Roadmap</div>
+  <div class="sec-sub">Check off milestones as you complete them. Progress is saved!
+    <button class="card-audio" style="position:relative;display:inline-flex;margin-left:8px;width:28px;height:28px;font-size:12px;vertical-align:middle" onclick="speakRoadmap()">🔊</button>
+  </div>
+  <div id="roadmapList"></div>
+</div>
+
+</div><!-- /main -->
+
+<!-- MODAL -->
+<div class="modal-bg" id="modal" style="display:none" onclick="closeModal()">
+  <div class="modal" onclick="event.stopPropagation()" id="modalContent"></div>
+</div>
+
+<script>
+// ══════ DATA ══════
+const TOOLS = [
+  {name:"ChatGPT",icon:"🤖",cat:"AI Assistant",color:"#10a37f",best:"Writing, coding, image generation, data analysis",desc:"OpenAI's flagship AI assistant built on GPT models. Excels at long-form content creation, code generation across 50+ languages, brainstorming, tutoring, and DALL·E image creation. The GPT Store offers thousands of specialized mini-apps. Code Interpreter lets you run Python, analyze CSV files, and create charts. Plus plan at $20/month unlocks GPT-5.2, web browsing, and advanced data analysis.",tier:"Free / Plus $20 / Team $30 / Enterprise"},
+  {name:"Claude AI",icon:"🧠",cat:"AI Assistant",color:"#D97706",best:"Long documents, desktop agent, coding, analysis",desc:"Anthropic's safety-first AI with a massive 200K-token context window that can process entire books or lengthy reports in one go. Claude Opus 4.6 is the most advanced model. Claude Cowork controls your desktop — clicking, typing, navigating apps like a human. Dispatch lets you send tasks from your iPhone and come back to finished work. MCP integrations connect Gmail, Google Calendar, Slack, Canva, and Netlify natively. Voice Mode supports 20 languages for hands-free commands.",tier:"Free / Pro $20 / Max $100–200 / Team $30"},
+  {name:"Gemini",icon:"✨",cat:"AI Assistant",color:"#4285F4",best:"Google ecosystem, multimodal, Android control",desc:"Google's multimodal AI deeply integrated with Gmail, Drive, Calendar, Docs, and Search. The Windows desktop app works like Spotlight Search with AI — pull it up with Alt+Space for web search, local file search, Drive search, and Google Lens visual analysis. Gemini 2.5 Computer Use model enables browser automation via API. A Mac app with Desktop Intelligence is in beta testing. Chrome integration provides free AI assistance on any webpage.",tier:"Free / Advanced $19.99 / Business / Enterprise"},
+  {name:"Perplexity",icon:"🔍",cat:"AI Search & Agent",color:"#20B2AA",best:"Research with citations, Computer agent, financial data",desc:"AI-powered search engine that synthesizes information from the web with inline citations. Orchestrates 20+ frontier AI models including GPT-5.2, Claude 4.6, and Gemini. Perplexity Computer is a full digital worker that creates and executes entire workflows for hours or months. Personal Computer runs 24/7 on a Mac mini with local file access. Premium data from Statista, CB Insights, PitchBook, FactSet, and S&P Global for financial research.",tier:"Free / Pro $20 / Max with credits"},
+  {name:"Comet Browser",icon:"☄️",cat:"AI Browser",color:"#FF6B35",best:"AI-native browsing, in-page assistant, web automation",desc:"The world's first AI-native browser built by Perplexity on Chromium. Comet Assistant provides in-page research, summarization, and autonomous multi-step tasks like booking flights, managing email, and filling forms. Has persistent memory across sessions and can pull context from open tabs. Enterprise version supports MDM deployment with CrowdStrike security integration and admin controls over AI behavior.",tier:"With Perplexity Pro/Max"},
+  {name:"NotebookLM",icon:"📓",cat:"Research",color:"#EA4335",best:"Source-grounded AI, audio overviews, study guides",desc:"Google's personal research assistant. Upload PDFs, Google Docs, websites, and YouTube videos, and it creates an AI expert grounded exclusively in YOUR sources — eliminating hallucination. Famous Audio Overview feature generates AI podcast-style summaries you can listen to on the go. Creates study guides, FAQ documents, timelines, and briefing documents. Perfect for students, researchers, and professionals.",tier:"Free / NotebookLM Plus $15"},
+  {name:"Notion",icon:"📝",cat:"Workspace",color:"#000000",best:"Notes, databases, wikis, project management",desc:"All-in-one workspace combining notes, databases, kanban boards, wikis, calendars, timelines, and galleries. Notion AI adds writing assistance, summarization, translation, and content generation directly in your workspace. Build relational databases, create templates, automate workflows, and sync across all devices. Perfect for building your personal knowledge hub and second brain.",tier:"Free / Plus $10 / Business $18 / Enterprise"},
+  {name:"Zapier",icon:"⚡",cat:"Automation",color:"#FF4A00",best:"Cross-app automation, no-code workflows",desc:"No-code automation platform connecting 7,000+ apps. Create automated workflows called Zaps that trigger actions across platforms. Auto-save Gmail attachments to Google Drive, post to multiple social channels, sync CRM data, send notifications, and create multi-step workflows with conditional logic. AI can now generate Zaps from plain English descriptions of what you want to automate.",tier:"Free (100 tasks/mo) / Starter $29.99 / Pro $73.50"},
+  {name:"Monday.com",icon:"📊",cat:"Project Management",color:"#6161FF",best:"Visual boards, team collaboration, dashboards",desc:"A visual Work Operating System for project management, CRM, dev tracking, and team collaboration. Customizable boards with columns for status, dates, people, and more. Built-in Gantt charts, dashboards, automations, and time tracking. AI features summarize updates and generate action items. Great for managing client work, internal projects, and resource planning.",tier:"Free (2 users) / Basic $12 / Standard $14 / Pro $27"},
+  {name:"GitHub",icon:"🐙",cat:"Development",color:"#6e40c9",best:"Code hosting, CI/CD, Pages, Copilot",desc:"The world's leading platform for version control, code hosting, and collaborative software development. Built on Git for tracking every change to your code. GitHub Actions automates CI/CD pipelines — build, test, and deploy automatically. GitHub Pages hosts websites for free directly from your repo. GitHub Copilot provides AI-powered code suggestions. Essential for any developer.",tier:"Free / Pro $4 / Team $4/user / Enterprise $21/user"},
+  {name:"Firebase",icon:"🔥",cat:"Backend",color:"#FFCA28",best:"Real-time DB, auth, hosting, push notifications",desc:"Google's Backend-as-a-Service platform for building and scaling web and mobile apps rapidly. Firestore and Realtime Database provide instant data sync across all clients. Authentication supports email, Google, Apple, and more with just a few lines of code. Cloud Functions run serverless backend logic. Firebase Hosting deploys your app with a global CDN and automatic HTTPS. Analytics tracks user behavior.",tier:"Free (Spark plan) / Pay-as-you-go (Blaze)"},
+  {name:"Supabase",icon:"⚡",cat:"Backend",color:"#3ECF8E",best:"PostgreSQL, auto APIs, Row Level Security",desc:"An open-source Firebase alternative built on PostgreSQL — the world's most trusted relational database. Auto-generates REST and GraphQL APIs from your database schema. Row Level Security provides fine-grained access control. Real-time subscriptions push data changes to clients instantly. Edge Functions run serverless logic at the edge. Full-text search built in. Choose this when you need SQL power with Firebase-like ease.",tier:"Free / Pro $25 / Team $599 / Enterprise"},
+  {name:"Canva",icon:"🎨",cat:"Design",color:"#00C4CC",best:"Graphics, presentations, video, brand kits",desc:"Visual design platform for creating presentations, social media graphics, videos, documents, websites, and print materials. Magic Design generates professional layouts from text prompts. Magic Write creates copy. Background Remover, image generation, and video editing built in. Brand Kit keeps all your designs consistent with your colors, fonts, and logos. Integrates with Claude AI for even more powerful design automation.",tier:"Free / Pro $15 / Teams $10/user / Enterprise"},
+  {name:"Gamma",icon:"🚀",cat:"Presentations",color:"#8B5CF6",best:"AI-generated decks, modern design, web publishing",desc:"AI-powered presentation and document creation tool that generates polished decks, docs, and webpages from text prompts. Describe your topic and Gamma creates a complete deck with beautiful modern layouts, images, and typography. Supports embedded media, collaborative editing, and multiple export formats. Share as a live web link or export as PowerPoint or PDF. Great for pitches, reports, and educational content.",tier:"Free (400 credits) / Plus $10 / Pro $20"},
+  {name:"Netlify",icon:"🌐",cat:"Hosting",color:"#00C7B7",best:"Git deployment, serverless, free hosting, HTTPS",desc:"Cloud platform for deploying and hosting modern web applications. Connect a GitHub repo and every push to your main branch auto-deploys within seconds. Automatic HTTPS encryption, serverless functions for backend logic, form handling without a server, split testing for A/B experiments, and a generous free tier for personal projects. Perfect for portfolios, blogs, command centers, and web apps.",tier:"Free / Pro $19 / Business $99 / Enterprise"},
+];
+
+const QA = [
+  {q:"What are the 3 best tools for making presentations?",a:"Gamma is the fastest — it generates complete decks from a text prompt with modern design. Canva gives the most design control with thousands of templates and drag-and-drop editing plus AI Magic Design. Google Slides via Gemini is best if your team lives in Google Workspace for collaborative, AI-assisted presentations.",tools:["Gamma","Canva","Gemini"],emoji:"🎯"},
+  {q:"Which AI is best for writing long documents?",a:"Claude AI wins with its 200K-token context window — it can process entire books in one go. It maintains coherence across long texts and follows complex formatting instructions precisely. ChatGPT is a strong second choice, especially for creative writing and story generation.",tools:["Claude AI","ChatGPT"],emoji:"📄"},
+  {q:"Best tool for academic research with sources?",a:"Perplexity AI is the gold standard because every answer includes inline citations from real web sources. NotebookLM is excellent when you have your own documents and want AI grounded strictly in those materials. Use both together: Perplexity to find new sources, NotebookLM to analyze your collected materials.",tools:["Perplexity","NotebookLM"],emoji:"🎓"},
+  {q:"How do I build and deploy a free website?",a:"Use GitHub to host your code in a repository for free. Deploy using Netlify or GitHub Pages — both turn your repo into a live website with auto-deploy on every push. For backend, use Firebase for NoSQL or Supabase for PostgreSQL on their free tiers. Canva supplies design assets. Total cost: zero dollars.",tools:["GitHub","Netlify","Firebase","Supabase"],emoji:"🌍"},
+  {q:"Best way to automate tasks across apps?",a:"Zapier connects 7,000 plus apps with no-code workflows. For example, auto-save Gmail attachments to Drive, sync CRM data, or post to multiple social channels. Monday.com adds project-specific automations. Claude AI with MCP integrations can automate Gmail, Calendar, and file management directly from your desktop.",tools:["Zapier","Monday.com","Claude AI"],emoji:"⚡"},
+  {q:"Which AI is best for coding?",a:"Claude AI excels at large codebase understanding and complex architecture. ChatGPT offers Code Interpreter for running and testing code interactively. GitHub Copilot gives real-time code suggestions directly in VS Code as you type. For deployment, use Netlify for frontend and Firebase or Supabase for backend.",tools:["Claude AI","ChatGPT","GitHub"],emoji:"💻"},
+  {q:"Best tool for managing knowledge and notes?",a:"Notion is the clear winner — it combines notes, databases, wikis, and project management in one workspace with powerful linking and relational databases. Notion AI adds writing assistance and summarization. NotebookLM is great for source-grounded analysis of specific documents.",tools:["Notion","NotebookLM"],emoji:"🗂️"},
+  {q:"What free tools should I start with?",a:"Start with the free tiers of Claude AI, ChatGPT, Gemini, and Perplexity — all four major AI assistants. Add NotebookLM for source-grounded study, GitHub for code repos, Netlify for free hosting, and Gamma for 400 free presentation credits. This covers chat AI, research, coding, design, and deployment at zero cost.",tools:["Claude AI","ChatGPT","Gemini","Perplexity"],emoji:"🆓"},
+];
+
+const CMP = [
+  {f:"Desktop App",c:"✅ Windows + Mac",g:"✅ Windows (Labs); Mac beta",p:"⚠️ Web + Comet browser"},
+  {f:"Computer Control",c:"✅ Clicks, types, navigates",g:"⚠️ API-only for devs",p:"✅ Personal Computer (Mac mini)"},
+  {f:"Windows Support",c:"✅ Full (Feb 2026)",g:"✅ US/Canada only",p:"⚠️ Comet only; PC is Mac-only"},
+  {f:"Mobile → Desktop",c:"✅ Dispatch from iPhone",g:"✅ Gemini app",p:"✅ Any device"},
+  {f:"Gmail Integration",c:"✅ MCP connector",g:"✅ Native (best)",p:"⚠️ Via Comet"},
+  {f:"Voice Commands",c:"✅ Push-to-talk 20 langs",g:"✅ Full voice mode",p:"❌ Not primary"},
+  {f:"Real-time Automation",c:"✅ Cowork + Scheduled",g:"⚠️ Limited on desktop",p:"✅ Runs hours/months"},
+  {f:"Research & Citations",c:"✅ Web search",g:"✅ Google Search",p:"✅ Best-in-class"},
+  {f:"Context Window",c:"200K tokens",g:"1M+ tokens",p:"Varies by model"},
+  {f:"Pricing",c:"Pro $20/mo",g:"Advanced $19.99",p:"Pro $20/mo"},
+];
+
+const WINNERS = [
+  {cat:"Desktop Control",winner:"Claude AI",icon:"🏆",color:"#D97706",why:"Full Windows support, screen control, Dispatch from iPhone"},
+  {cat:"Gmail & Google",winner:"Gemini",icon:"🥇",color:"#4285F4",why:"Native Google ecosystem integration, deepest Gmail access"},
+  {cat:"Research",winner:"Perplexity",icon:"🥇",color:"#20B2AA",why:"20+ models, inline citations, premium data sources"},
+  {cat:"Apple Devices",winner:"Claude AI",icon:"🏆",color:"#D97706",why:"Dispatch: iPhone → Windows laptop workflow is seamless"},
+];
+
+const TASKS = [
+  {task:"Drafting emails",best:"Claude Cowork",icon:"✉️"},
+  {task:"Organizing inbox",best:"Claude + Zapier",icon:"📥"},
+  {task:"Excel reports",best:"Claude Computer Use",icon:"📊"},
+  {task:"Daily workflow",best:"Claude Scheduled Tasks",icon:"📅"},
+  {task:"File organization",best:"Claude File Access",icon:"📁"},
+  {task:"Voice commands",best:"Claude Voice Mode",icon:"🎙️"},
+  {task:"24/7 automation",best:"Perplexity Personal PC",icon:"🔄"},
+  {task:"Cross-app workflows",best:"Zapier",icon:"⚡"},
+];
+
+const ASSISTANTS = [
+  {name:"Claude Cowork",icon:"🧠",color:"#D97706",tag:"RECOMMENDED",features:["Full Windows + Mac desktop control","Dispatch: tasks from iPhone","MCP: Gmail, Calendar, Slack, Canva","Voice Mode with 20 languages","Scheduled recurring tasks","Local file access in secure VM"],price:"Pro $20/mo",speech:"Claude Cowork is the recommended desktop assistant. It provides full Windows and Mac desktop control, letting Claude click, type, and navigate your screen like a human. Dispatch lets you send tasks from your iPhone. It has native MCP connectors for Gmail, Calendar, Slack, and Canva. Voice Mode supports 20 languages. You can schedule recurring tasks. All files stay local in a secure virtual machine. Pro plan is $20 per month."},
+  {name:"Gemini Desktop",icon:"✨",color:"#4285F4",tag:"GOOGLE ECOSYSTEM",features:["Windows app with Alt+Space shortcut","Desktop Intelligence (Mac beta)","Deep Gmail, Drive, Calendar integration","Free Chrome AI button","Android device control","Google Lens screen analysis"],price:"Advanced $19.99",speech:"Gemini Desktop is best for the Google ecosystem. The Windows app works like Spotlight Search with an Alt+Space shortcut. Desktop Intelligence on Mac lets Gemini see your screen. It has deep native integration with Gmail, Drive, and Calendar. The Chrome AI button is free for everyone. It can control Android devices and uses Google Lens for screen analysis. Advanced plan is $19.99 per month."},
+  {name:"Perplexity Computer",icon:"🔍",color:"#20B2AA",tag:"ALWAYS-ON AGENT",features:["20+ model orchestration","Personal Computer on Mac mini 24/7","Comet AI-native browser","Enterprise connectors (Salesforce etc.)","Premium financial data sources","Kill switch and full audit trail"],price:"Max $20/mo + credits",speech:"Perplexity Computer is an always-on AI agent. It orchestrates 20 plus frontier AI models to find the best one for each task. Personal Computer runs 24/7 on a Mac mini with local file access. Comet is an AI-native browser with built-in assistance. It connects to enterprise tools like Salesforce and Snowflake. Premium data from Statista, CB Insights, and PitchBook. Every action is logged with a kill switch for safety. Max plan is $20 per month with usage credits."},
+];
+
+const PHASES = [
+  {phase:"Phase 1: Foundation",weeks:"Week 1–2",color:"#10B981",icon:"🌱",tasks:["Set up free accounts on Claude, ChatGPT, Gemini, Perplexity","Practice prompt engineering with clear, specific prompts","Upload materials to NotebookLM and generate audio overviews","Create a Notion workspace for your AI learning notes","Compare tools by asking the same question across all four"]},
+  {phase:"Phase 2: Productivity",weeks:"Week 3–4",color:"#4A90D9",icon:"⚡",tasks:["Subscribe to Claude Pro and activate Cowork on Windows","Connect Claude MCP integrations: Gmail, Calendar, Slack","Set up 2–3 Zapier automations like Gmail to Drive","Create your first project board in Monday.com or Notion","Use Canva to create branded templates"]},
+  {phase:"Phase 3: Development",weeks:"Week 5–6",color:"#7C3AED",icon:"🔨",tasks:["Create a GitHub account and learn Git basics","Build your command center with HTML CSS JS using Claude","Deploy on Netlify and customize your domain","Explore Firebase or Supabase for a data feature","Create an AI-generated presentation with Gamma"]},
+  {phase:"Phase 4: Advanced",weeks:"Week 7–8",color:"#EC4899",icon:"🚀",tasks:["Explore Claude Computer Use for desktop automation","Set up Perplexity Pro and try Computer workflows","Build complex Zapier workflows with conditional logic","Add persistent storage to your command center","Create a personal workflow combining 3+ tools"]},
+  {phase:"Phase 5: Mastery",weeks:"Ongoing",color:"#F59E0B",icon:"👑",tasks:["Contribute to open-source projects on GitHub","Build and deploy full web applications","Create custom GPTs, Claude Projects, or Perplexity Spaces","Teach others and document your learnings","Stay current with AI news and experiment with new tools"]},
+];
+
+// ══════ STATE ══════
+let currentTab = "home";
+let catFilter = "All";
+let searchTerm = "";
+let progress = {};
+try { progress = JSON.parse(localStorage.getItem("ainotebook_progress") || "{}"); } catch(e) {}
+
+// ══════ SPEECH ══════
+let currentUtterance = null;
+let isPaused = false;
+
+function speak(text, title) {
+  stopAudio();
+  if (!('speechSynthesis' in window)) { alert("Your browser doesn't support text-to-speech. Try Chrome or Safari."); return; }
+  const u = new SpeechSynthesisUtterance(text);
+  u.rate = 0.95; u.pitch = 1; u.volume = 1;
+  // Try to pick a good voice
+  const voices = speechSynthesis.getVoices();
+  const preferred = voices.find(v => v.name.includes("Samantha") || v.name.includes("Google") || v.name.includes("Microsoft Zira") || v.name.includes("Karen"));
+  if (preferred) u.voice = preferred;
+  u.onstart = () => { showAudioBar(title || "Audio"); };
+  u.onend = () => { hideAudioBar(); currentUtterance = null; };
+  u.onerror = () => { hideAudioBar(); currentUtterance = null; };
+  currentUtterance = u;
+  isPaused = false;
+  speechSynthesis.speak(u);
+}
+
+function stopAudio() {
+  speechSynthesis.cancel();
+  hideAudioBar();
+  currentUtterance = null;
+  isPaused = false;
+  // Remove playing class from all buttons
+  document.querySelectorAll('.card-audio.playing').forEach(b => b.classList.remove('playing'));
+}
+
+function togglePause() {
+  if (!currentUtterance) return;
+  if (isPaused) { speechSynthesis.resume(); isPaused = false; document.getElementById('audioPause').textContent = '⏸️'; document.getElementById('audioStatus').textContent = 'Speaking...'; }
+  else { speechSynthesis.pause(); isPaused = true; document.getElementById('audioPause').textContent = '▶️'; document.getElementById('audioStatus').textContent = 'Paused'; }
+}
+
+function showAudioBar(title) {
+  const bar = document.getElementById('audioBar');
+  bar.classList.add('active');
+  document.getElementById('audioTitle').textContent = '🔊 ' + title;
+  document.getElementById('audioStatus').textContent = 'Speaking...';
+  document.getElementById('audioPause').textContent = '⏸️';
+}
+function hideAudioBar() { document.getElementById('audioBar').classList.remove('active'); }
+
+// Load voices
+if ('speechSynthesis' in window) { speechSynthesis.onvoiceschanged = () => speechSynthesis.getVoices(); speechSynthesis.getVoices(); }
+
+// ══════ TABS ══════
+function showTab(id, btn) {
+  currentTab = id;
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.getElementById('sec-'+id).classList.add('active');
+  document.querySelectorAll('.tab').forEach(t => { t.classList.remove('tab-on'); t.classList.add('tab-off'); });
+  if (btn) { btn.classList.remove('tab-off'); btn.classList.add('tab-on'); }
+  else { document.querySelectorAll('.tab').forEach(t => { if (t.textContent.toLowerCase().includes(id)) { t.classList.remove('tab-off'); t.classList.add('tab-on'); } }); }
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ══════ TOOLS ══════
+function renderTools() {
+  const cats = ["All", ...new Set(TOOLS.map(t => t.cat))];
+  let cf = '';
+  cats.forEach(c => { cf += `<button class="pill ${catFilter===c?'on':''}" onclick="setCat('${c}')">${c}</button>`; });
+  document.getElementById('catFilters').innerHTML = cf;
+
+  const filtered = TOOLS.filter(t =>
+    (catFilter==="All" || t.cat===catFilter) &&
+    (searchTerm==="" || t.name.toLowerCase().includes(searchTerm.toLowerCase()) || t.cat.toLowerCase().includes(searchTerm.toLowerCase()))
+  );
+
+  let html = '';
+  filtered.forEach((t,i) => {
+    html += `<div class="card anim" style="animation-delay:${i*0.05}s" onclick="openTool(${TOOLS.indexOf(t)})">
+      <div class="card-top" style="background:${t.color}"></div>
+      <button class="card-audio" onclick="event.stopPropagation();speakTool(${TOOLS.indexOf(t)},this)">🔊</button>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+        <div class="card-icon" style="background:${t.color}20">${t.icon}</div>
+        <div><div class="card-name">${t.name}</div><div class="card-cat" style="color:${t.color}">${t.cat}</div></div>
+      </div>
+      <div class="card-best"><b>Best at:</b> ${t.best}</div>
+      <div class="card-tier">💰 ${t.tier}</div>
+    </div>`;
+  });
+  document.getElementById('toolsGrid').innerHTML = html;
+}
+
+function setCat(c) { catFilter = c; renderTools(); }
+function filterTools() { searchTerm = document.querySelector('.search').value; renderTools(); }
+
+function speakTool(idx, btn) {
+  const t = TOOLS[idx];
+  if (btn) { document.querySelectorAll('.card-audio.playing').forEach(b => b.classList.remove('playing')); btn.classList.add('playing'); }
+  speak(`${t.name}. Category: ${t.cat}. ${t.desc} Pricing: ${t.tier}`, t.name);
+}
+
+function openTool(idx) {
+  const t = TOOLS[idx];
+  document.getElementById('modalContent').innerHTML = `
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-header">
+      <div class="modal-icon" style="background:${t.color}20">${t.icon}</div>
+      <div><div class="modal-name">${t.name}</div><div class="modal-cat" style="color:${t.color}">${t.cat}</div></div>
+    </div>
+    <div class="modal-desc">${t.desc}</div>
+    <div class="modal-best" style="background:${t.color}15">
+      <div class="modal-best-label" style="color:${t.color}">Best At</div>
+      <div style="font-size:13px;color:var(--text)">${t.best}</div>
+    </div>
+    <div class="modal-tier">💰 ${t.tier}</div>
+    <button class="modal-listen" style="background:${t.color};color:#fff" onclick="speakTool(${idx})">
+      🔊 Listen to this
+    </button>
+  `;
+  document.getElementById('modal').style.display = 'flex';
+}
+function closeModal() { document.getElementById('modal').style.display = 'none'; }
+
+// ══════ Q&A ══════
+function renderQA() {
+  let html = '';
+  QA.forEach((qa,i) => {
+    const toolTags = qa.tools.map(tn => {
+      const t = TOOLS.find(x => x.name===tn);
+      return `<span class="qa-tag" style="background:${t?t.color:'#4A90D9'}25;color:${t?t.color:'#4A90D9'}">${t?t.icon:''} ${tn}</span>`;
+    }).join('');
+    html += `<div class="qa-card anim" style="animation-delay:${i*0.07}s" onclick="flipQA(${i})">
+      <div class="qa-inner" id="qa-${i}">
+        <div class="qa-face qa-front">
+          <div class="qa-emoji">${qa.emoji}</div>
+          <div class="qa-q">${qa.q}</div>
+          <div class="qa-hint">TAP TO REVEAL ↻</div>
+        </div>
+        <div class="qa-face qa-back">
+          <div>
+            <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:8px">
+              <span style="font-size:11px;color:var(--green);font-weight:700">ANSWER</span>
+              <button class="card-audio" style="position:relative;width:28px;height:28px;font-size:12px" onclick="event.stopPropagation();speakQA(${i})">🔊</button>
+            </div>
+            <div class="qa-a">${qa.a}</div>
+          </div>
+          <div class="qa-tags">${toolTags}</div>
+        </div>
+      </div>
+    </div>`;
+  });
+  document.getElementById('qaGrid').innerHTML = html;
+}
+function flipQA(i) { document.getElementById('qa-'+i).classList.toggle('flipped'); }
+function speakQA(i) { const qa = QA[i]; speak(`Question: ${qa.q}. Answer: ${qa.a}`, 'Q&A #'+(i+1)); }
+
+// ══════ DESKTOP ══════
+function renderDesktop() {
+  let thtml = '';
+  TASKS.forEach(t => {
+    thtml += `<div class="task-row"><div class="task-left"><span style="font-size:18px">${t.icon}</span><span>${t.task}</span></div><span class="task-tool">${t.best}</span></div>`;
+  });
+  document.getElementById('taskList').innerHTML = thtml;
+
+  let ahtml = '';
+  ASSISTANTS.forEach((a,i) => {
+    const tagStyle = a.tag==="RECOMMENDED" ? `background:linear-gradient(135deg,#D97706,#F59E0B);color:#000` : `background:${a.color}30;color:${a.color}`;
+    const feats = a.features.map(f => `<div style="font-size:12px;color:var(--muted);padding:4px 0 4px 10px;border-left:2px solid ${a.color}30;margin-bottom:3px">${f}</div>`).join('');
+    ahtml += `<div class="card anim" style="animation-delay:${i*0.1}s;border-top:3px solid ${a.color};cursor:default">
+      <div style="position:absolute;top:10px;right:10px;${tagStyle};font-size:9px;font-weight:800;padding:3px 7px;border-radius:5px">${a.tag}</div>
+      <button class="card-audio" style="top:36px" onclick="event.stopPropagation();speak('${a.speech.replace(/'/g,"\\'")}','${a.name}')">🔊</button>
+      <div style="font-size:28px;margin-bottom:6px">${a.icon}</div>
+      <div style="font-weight:700;font-size:16px;margin-bottom:10px">${a.name}</div>
+      ${feats}
+      <div style="margin-top:10px;font-family:'JetBrains Mono',monospace;font-size:12px;color:${a.color};font-weight:600">${a.price}</div>
+    </div>`;
+  });
+  document.getElementById('assistantCards').innerHTML = ahtml;
+}
+
+function speakDesktopTasks() {
+  const text = TASKS.map(t => `${t.task}: best tool is ${t.best}`).join('. ');
+  speak('Here are the best AI tools for each desktop task. ' + text, 'Desktop Tasks');
+}
+
+function speakRec() {
+  speak("My recommendation for your setup: Claude AI Pro at $20 per month as your primary desktop assistant. It works on your Windows Lenovo right now, connects to Gmail and Calendar via MCP, and lets you send tasks from your iPhone with Dispatch. Add Perplexity Pro at $20 per month for research and the Comet browser. Use Gemini's free tier for Google-specific tasks. Total cost: $40 per month for a 10x productivity stack.", "Recommendation");
+}
+
+// ══════ COMPARE ══════
+function renderCompare() {
+  let thtml = '<thead><tr><th>Feature</th><th style="color:#D97706">🧠 Claude</th><th style="color:#4285F4">✨ Gemini</th><th style="color:#20B2AA">🔍 Perplexity</th></tr></thead><tbody>';
+  CMP.forEach((r,i) => {
+    thtml += `<tr style="background:${i%2===0?'transparent':'rgba(255,255,255,0.02)'}"><td>${r.f}</td><td>${r.c}</td><td>${r.g}</td><td>${r.p}</td></tr>`;
+  });
+  thtml += '</tbody>';
+  document.getElementById('cmpTable').innerHTML = thtml;
+
+  let whtml = '';
+  WINNERS.forEach(w => {
+    whtml += `<div class="winner" style="background:${w.color}10;border-color:${w.color}">
+      <div class="winner-cat">${w.cat}</div>
+      <div class="winner-name" style="color:${w.color}">${w.icon} ${w.winner}</div>
+      <div class="winner-why">${w.why}</div>
+    </div>`;
+  });
+  document.getElementById('winnerCards').innerHTML = whtml;
+}
+
+function speakCompare() {
+  speak("Here is the head-to-head comparison of Claude, Gemini, and Perplexity for your setup. For Desktop Control, Claude wins with full Windows support and screen control. For Gmail and Google services, Gemini wins with the deepest native integration. For Research, Perplexity wins with 20 plus models and inline citations. For your Apple devices, Claude wins because Dispatch lets you send tasks from iPhone to your Windows laptop seamlessly. My overall recommendation is Claude Pro at $20 per month as primary, Perplexity Pro at $20 per month for research, and Gemini free for Google tasks.", "Comparison");
+}
+
+// ══════ ROADMAP ══════
+function renderRoadmap() {
+  let html = '';
+  PHASES.forEach((ph,pi) => {
+    const done = ph.tasks.filter((_,ti) => progress[`${pi}-${ti}`]).length;
+    let tasks = '';
+    ph.tasks.forEach((task,ti) => {
+      const id = `${pi}-${ti}`;
+      const isDone = progress[id];
+      tasks += `<div class="milestone" onclick="toggleMilestone('${id}')">
+        <div class="check ${isDone?'done':''}" style="${isDone?'background:'+ph.color:''};">${isDone?'✓':''}</div>
+        <span class="ms-text ${isDone?'done':''}">${task}</span>
+      </div>`;
+    });
+    html += `<div class="phase anim" style="animation-delay:${pi*0.08}s">
+      <div class="phase-head" style="background:${ph.color}10">
+        <div class="phase-info"><span class="phase-icon">${ph.icon}</span><div><div class="phase-title" style="color:${ph.color}">${ph.phase}</div><div class="phase-weeks">${ph.weeks}</div></div></div>
+        <div class="phase-count" style="color:${ph.color}">${done}/${ph.tasks.length}</div>
+      </div>
+      ${tasks}
+    </div>`;
+  });
+  document.getElementById('roadmapList').innerHTML = html;
+  updateProgress();
+}
+
+function toggleMilestone(id) {
+  progress[id] = !progress[id];
+  try { localStorage.setItem('ainotebook_progress', JSON.stringify(progress)); } catch(e) {}
+  renderRoadmap();
+}
+
+function updateProgress() {
+  const total = 25;
+  const done = Object.values(progress).filter(Boolean).length;
+  const pct = Math.round(done/total*100);
+  const ring = document.getElementById('progressRing');
+  if (ring) ring.setAttribute('stroke-dashoffset', 188.5 * (1 - done/total));
+  const pctEl = document.getElementById('progressPct');
+  if (pctEl) pctEl.textContent = pct + '%';
+  const ptEl = document.getElementById('progressText');
+  if (ptEl) ptEl.textContent = done + ' of ' + total + ' milestones';
+}
+
+function speakRoadmap() {
+  let text = "Here is your 8-week AI learning roadmap. ";
+  PHASES.forEach(ph => {
+    text += `${ph.phase}, ${ph.weeks}: `;
+    ph.tasks.forEach(t => text += t + '. ');
+  });
+  speak(text, 'Learning Roadmap');
+}
+
+// ══════ INIT ══════
+function init() {
+  renderTools();
+  renderQA();
+  renderDesktop();
+  renderCompare();
+  renderRoadmap();
+  updateProgress();
+}
+
+// Ensure voices are loaded before init
+if ('speechSynthesis' in window) {
+  speechSynthesis.getVoices();
+  setTimeout(init, 100);
+} else {
+  init();
+}
+</script>
+</body>
+</html>
